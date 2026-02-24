@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        /* নেভিগেশন বার */
+        .navbar {
+            background: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #2c5f2d;
+        }
+        
+        .cart-icon {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ব্রেডক্রাম্ব */
+        .breadcrumb {
+            background: white;
+            padding: 15px 5%;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a:hover {
+            color: #2c5f2d;
+        }
+        
+        .breadcrumb span {
+            color: #999;
+            margin: 0 5px;
+        }
+        
+        /* প্রধান কন্টেন্ট */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        /* প্রোডাক্ট ডিটেইল গ্রিড */
+        .product-detail {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        /* ইমেজ গ্যালারি */
+        .product-gallery {
+            position: relative;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 15px;
+            cursor: zoom-in;
+            transition: transform 0.3s;
+        }
+        
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .thumbnail-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .thumbnail {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #2c5f2d;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4444;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        /* প্রোডাক্ট তথ্য */
+        .product-info {
+            padding: 20px 0;
+        }
+        
+        .product-category {
+            color: #2c5f2d;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: inline-block;
+            background: #e8f5e9;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .product-title {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .product-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .product-rating {
+            color: #ffc107;
+            font-size: 1.2rem;
+        }
+        
+        .rating-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .product-price-container {
+            margin: 20px 0;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .product-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c5f2d;
+        }
+        
+        .product-old-price {
+            font-size: 1.5rem;
+            color: #999;
+            text-decoration: line-through;
+            margin-left: 15px;
+        }
+        
+        .product-stock {
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+        
+        .in-stock {
+            color: #28a745;
+            background: #d4edda;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .out-of-stock {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        /* সেলার তথ্য */
+        .seller-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .seller-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            margin-bottom: 10px;
+        }
+        
+        .seller-stats {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* পরিমাণ সিলেক্টর */
+        .quantity-selector {
+            margin: 20px 0;
+        }
+        
+        .quantity-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background: #2c5f2d;
+            color: white;
+            border-color: #2c5f2d;
+        }
+        
+        .quantity-input {
+            width: 80px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+        
+        /* অ্যাকশন বাটন */
+        .product-actions {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 95, 45, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #2c5f2d;
+            border: 2px solid #2c5f2d;
+        }
+        
+        .btn-outline:hover {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* প্রোডাক্ট ডিটেইল ট্যাব */
+        .product-tabs {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+        
+        .tab-headers {
+            display: flex;
+            gap: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .tab-header {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .tab-header.active {
+            color: #2c5f2d;
+        }
+        
+        .tab-header.active::after {
+            content: '';
+            position: absolute;
+            bottom: -17px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #2c5f2d;
+        }
+        
+        .tab-content {
+            display: none;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* বিবরণ টেবিল */
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .specs-table tr {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .specs-table td {
+            padding: 12px;
+        }
+        
+        .specs-table td:first-child {
+            font-weight: bold;
+            width: 200px;
+            color: #333;
+        }
+        
+        /* রিভিউ সেকশন */
+        .review-item {
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .review-user {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .review-rating {
+            color: #ffc107;
+        }
+        
+        .review-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .review-comment {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .add-review {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .rating-select {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .rating-star {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .rating-star:hover,
+        .rating-star.active {
+            color: #ffc107;
+        }
+        
+        /* রিলেটেড প্রোডাক্ট */
+        .related-products {
+            margin-top: 40px;
+        }
+        
+        .related-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .related-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .related-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .related-info {
+            padding: 15px;
+        }
+        
+        .related-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .related-price {
+            color: #2c5f2d;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        /* ফুটার */
+        .footer {
+            background: #1a1a1a;
+            color: #999;
+            padding: 60px 5% 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+        
+        .footer-col h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .footer-col a {
+            color: #999;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .footer-col a:hover {
+            color: #2c5f2d;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* জুম মোডাল */
+        .zoom-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .zoom-modal.active {
+            display: flex;
+        }
+        
+        .zoom-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .close-zoom {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+        }
+        
+        /* রেসপনসিভ */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .product-detail {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .main-image {
+                height: 300px;
+            }
+            
+            .product-title {
+                font-size: 1.8rem;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .tab-headers {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- নেভিগেশন বার -->
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <span>🌵</span> Cactus Shop
+        </a>
+        
+        <div class="nav-links">
+            <a href="/">হোম</a>
+            <a href="/products/">পণ্য</a>
+            <a href="/cart/" class="cart-icon">
+                🛒 কার্ট
+                <span class="cart-count">0</span>
+            </a>
+            {% if user.is_authenticated %}
+                <a href="/accounts/logout/">লগআউট</a>
+            {% else %}
+                <a href="/accounts/login/">লগইন</a>
+                <a href="/accounts/register-choice/">রেজিস্টার</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <!-- ব্রেডক্রাম্ব -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="/">হোম</a>
+            <span>›</span>
+            <a href="/products/">পণ্য</a>
+            <span>›</span>
+            <a href="?category={{ product.category.slug }}">{{ product.category.name }}</a>
+            <span>›</span>
+            <span>{{ product.name|truncatechars:30 }}</span>
+        </div>
+    </div>
+    
+    <!-- প্রোডাক্ট ডিটেইল -->
+    <div class="container">
+        <div class="product-detail">
+            <!-- ইমেজ গ্যালারি -->
+            <div class="product-gallery">
+                {% if product.is_new %}
+                    <span class="product-badge">নতুন</span>
+                {% endif %}
+                
+                {% if product.discount_price %}
+                    <span class="discount-badge">-{{ product.get_discount_percentage }}%</span>
+                {% endif %}
+                
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image" id="mainImage" onclick="openZoom()">
+                
+                <div class="thumbnail-container">
+                    <img src="{{ product.image.url }}" alt="thumbnail" class="thumbnail active" onclick="changeImage(this.src)">
+                    {% if product.image2 %}
+                        <img src="{{ product.image2.url }}" alt="thumbnail" class="thumbnail" onclick="changeImage(this.src)">
+                    {% endif %}
+                    {% if product.image3 %}
+                        <img src="{{ product.image3.url }}" alt="thumbnail" class="thumbnail" onclick="changeImage(this.src)">
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- প্রোডাক্ট তথ্য -->
+            <div class="product-info">
+                <span class="product-category">{{ product.category.name }}</span>
+                <h1 class="product-title">{{ product.name }}</h1>
+                
+                <div class="product-meta">
+                    <div class="product-rating">
+                        {% with avg=product.average_rating %}
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= avg %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                        <span class="rating-count">({{ product.reviews.count }} রিভিউ)</span>
+                    </div>
+                    <div>বিক্রি: {{ product.sold_count }}টি</div>
+                    <div>দেখা: {{ product.views_count }} বার</div>
+                </div>
+                
+                <div class="product-price-container">
+                    <span class="product-price">৳ {{ product.get_display_price }}</span>
+                    {% if product.discount_price %}
+                        <span class="product-old-price">৳ {{ product.price }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-stock">
+                    {% if product.stock > 0 %}
+                        <span class="in-stock">✅ স্টকে আছে ({{ product.stock }}টি)</span>
+                    {% else %}
+                        <span class="out-of-stock">❌ স্টক আউট</span>
+                    {% endif %}
+                </div>
+                
+                <!-- সেলার তথ্য -->
+                <div class="seller-info">
+                    <div class="seller-name">🏪 {{ product.seller.seller_profile.store_name }}</div>
+                    <div class="seller-stats">
+                        <span>⭐ {{ product.seller.seller_profile.rating }} রেটিং</span>
+                        <span>📦 {{ product.seller.seller_profile.total_sales }} বিক্রি</span>
+                        <span>🌱 {{ product.seller.products.count }} পণ্য</span>
+                    </div>
+                </div>
+                
+                <!-- পরিমাণ সিলেক্টর -->
+                <div class="quantity-selector">
+                    <label class="quantity-label">পরিমাণ:</label>
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="decrementQuantity()">-</button>
+                        <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="{{ product.stock }}">
+                        <button class="quantity-btn" onclick="incrementQuantity()">+</button>
+                    </div>
+                </div>
+                
+                <!-- অ্যাকশন বাটন -->
+                <div class="product-actions">
+                    {% if product.stock > 0 %}
+                        <button class="btn btn-primary" onclick="addToCart()">
+                            🛒 কার্টে যোগ করুন
+                        </button>
+                        <button class="btn btn-secondary" onclick="buyNow()">
+                            ⚡ এখনই কিনুন
+                        </button>
+                    {% else %}
+                        <button class="btn btn-primary" disabled>স্টক শেষ</button>
+                    {% endif %}
+                    <button class="btn btn-outline">❤️</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- প্রোডাক্ট ট্যাব -->
+        <div class="product-tabs">
+            <div class="tab-headers">
+                <div class="tab-header active" onclick="openTab(event, 'description')">বিবরণ</div>
+                <div class="tab-header" onclick="openTab(event, 'specifications')">স্পেসিফিকেশন</div>
+                <div class="tab-header" onclick="openTab(event, 'reviews')">রিভিউ ({{ product.reviews.count }})</div>
+            </div>
+            
+            <div id="description" class="tab-content active">
+                <p>{{ product.description|linebreaks }}</p>
+            </div>
+            
+            <div id="specifications" class="tab-content">
+                <table class="specs-table">
+                    {% for key, value in product.specifications.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">কোনো স্পেসিফিকেশন দেওয়া নেই</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            
+            <div id="reviews" class="tab-content">
+                {% for review in product.reviews.all %}
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-user">{{ review.user.username }}</span>
+                        <span class="review-rating">{{ review.rating }} ★</span>
+                    </div>
+                    <div class="review-date">{{ review.created_at|date:"d M Y" }}</div>
+                    <div class="review-comment">{{ review.comment }}</div>
+                </div>
+                {% empty %}
+                <p>কোনো রিভিউ নেই</p>
+                {% endfor %}
+                
+                {% if user.is_authenticated %}
+                <div class="add-review">
+                    <h3>রিভিউ দিন</h3>
+                    <form method="post" action="{% url 'add_review' product.slug %}">
+                        {% csrf_token %}
+                        <div class="rating-select">
+                            <span class="rating-star" onclick="setRating(1)">★</span>
+                            <span class="rating-star" onclick="setRating(2)">★</span>
+                            <span class="rating-star" onclick="setRating(3)">★</span>
+                            <span class="rating-star" onclick="setRating(4)">★</span>
+                            <span class="rating-star" onclick="setRating(5)">★</span>
+                        </div>
+                        <input type="hidden" name="rating" id="rating" value="5">
+                        <textarea name="comment" placeholder="আপনার মতামত দিন..." rows="3" style="width:100%; padding:10px; margin:10px 0;"></textarea>
+                        <button type="submit" class="btn btn-primary">রিভিউ জমা দিন</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- রিলেটেড প্রোডাক্ট -->
+        {% if related_products %}
+        <div class="related-products">
+            <h2 class="related-title">একই ক্যাটাগরির আরও পণ্য</h2>
+            <div class="related-grid">
+                {% for related in related_products %}
+                <a href="{% url 'product_detail' related.slug %}" class="related-card">
+                    <img src="{{ related.image.url }}" alt="{{ related.name }}">
+                    <div class="related-info">
+                        <div class="related-name">{{ related.name|truncatechars:30 }}</div>
+                        <div class="related-price">৳ {{ related.get_display_price }}</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- ফুটার -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>🛍️ Cactus Shop</h3>
+                <p>বাংলাদেশের সবচেয়ে বড় অনলাইন মার্কেটপ্লেস। গাছ, হোম ডেকোর, গিফট আইটেম সহ হাজারো পণ্য।</p>
+            </div>
+            <div class="footer-col">
+                <h3>দ্রুত লিংক</h3>
+                <a href="/">হোম</a>
+                <a href="/products/">পণ্য</a>
+                <a href="/cart/">কার্ট</a>
+                <a href="/accounts/login/">লগইন</a>
+            </div>
+            <div class="footer-col">
+                <h3>সাপোর্ট</h3>
+                <a href="#">প্রivacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">যোগাযোগ</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2026 Cactus Shop. সর্বস্বত্ব সংরক্ষিত।</p>
+        </div>
+    </footer>
+    
+    <!-- জুম মোডাল -->
+    <div class="zoom-modal" id="zoomModal" onclick="closeZoom()">
+        <span class="close-zoom">&times;</span>
+        <img class="zoom-image" id="zoomImage" src="">
+    </div>
+    
+    <script>
+        // ইমেজ গ্যালারি
+        function changeImage(src) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+                if(thumb.src === src) thumb.classList.add('active');
+            });
+        }
+        
+        // জুম ফাংশন
+        function openZoom() {
+            document.getElementById('zoomImage').src = document.getElementById('mainImage').src;
+            document.getElementById('zoomModal').classList.add('active');
+        }
+        
+        function closeZoom() {
+            document.getElementById('zoomModal').classList.remove('active');
+        }
+        
+        // পরিমাণ কন্ট্রোল
+        function incrementQuantity() {
+            const input = document.getElementById('quantity');
+            const max = parseInt(input.max);
+            const current = parseInt(input.value);
+            if (current < max) {
+                input.value = current + 1;
+            }
+        }
+        
+        function decrementQuantity() {
+            const input = document.getElementById('quantity');
+            const current = parseInt(input.value);
+            if (current > 1) {
+                input.value = current - 1;
+            }
+        }
+        
+        // কার্ট ফাংশন
+        function addToCart() {
+            const quantity = document.getElementById('quantity').value;
+            alert('🛒 পণ্যটি কার্টে যোগ করা হয়েছে! (পরিমাণ: ' + quantity + ')');
+        }
+        
+        function buyNow() {
+            const quantity = document.getElementById('quantity').value;
+            alert('⚡ অর্ডার প্রসেস শুরু হচ্ছে... (পরিমাণ: ' + quantity + ')');
+        }
+        
+        // ট্যাব ফাংশন
+        function openTab(event, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-header').forEach(header => {
+                header.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // রেটিং সিলেক্ট
+        function setRating(rating) {
+            document.getElementById('rating').value = rating;
+            document.querySelectorAll('.rating-star').forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = '#ffc107';
+                } else {
+                    star.style.color = '#ddd';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

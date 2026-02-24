@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার ট্র্যাক - #{{ order.order_number }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .track-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .order-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .order-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .order-number {
+            font-size: 1.2rem;
+            color: #2c5f2d;
+            font-weight: bold;
+        }
+        
+        /* লাইভ ট্র্যাকিং */
+        .live-tracking {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .tracking-status {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .tracking-time {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* টাইমলাইন */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 60px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 2px solid #2c5f2d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+        
+        .timeline-item.completed .timeline-icon {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .timeline-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .timeline-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-desc {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+        
+        /* ডেলিভারি তথ্য */
+        .delivery-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* শেয়ার বাটন */
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .share-btn.facebook:hover { background: #3b5998; color: white; }
+        .share-btn.whatsapp:hover { background: #25D366; color: white; }
+        .share-btn.messenger:hover { background: #0084ff; color: white; }
+        
+        /* রিফ্রেশ বাটন */
+        .refresh-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .refresh-btn:hover {
+            background: #1e401f;
+        }
+        
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">🛒 Cactus Shop</a>
+    </nav>
+    
+    <div class="container">
+        <div class="track-card">
+            <div class="order-header">
+                <h1>🚚 অর্ডার ট্র্যাকিং</h1>
+                <div class="order-number">অর্ডার #{{ order.order_number }}</div>
+            </div>
+            
+            <!-- লাইভ ট্র্যাকিং -->
+            <div class="live-tracking">
+                <div class="tracking-status">
+                    {% if order.status == 'DELIVERED' %}
+                        📦 ডেলিভারি সম্পন্ন
+                    {% elif order.status == 'SHIPPED' %}
+                        🚚 পথে আছে
+                    {% elif order.status == 'PROCESSING' %}
+                        ⚙️ প্রসেস হচ্ছে
+                    {% elif order.status == 'CONFIRMED' %}
+                        ✅ কনফার্মড
+                    {% elif order.status == 'CANCELLED' %}
+                        ❌ ক্যান্সেলড
+                    {% else %}
+                        📝 পেন্ডিং
+                    {% endif %}
+                </div>
+                <div class="tracking-time">
+                    শেষ আপডেট: {{ order.updated_at|date:"h:i A, d M Y" }}
+                </div>
+            </div>
+            
+            <!-- টাইমলাইন -->
+            <h2 style="margin-bottom: 20px;">স্ট্যাটাস টাইমলাইন</h2>
+            <div class="timeline">
+                {% for history in status_history %}
+                <div class="timeline-item completed">
+                    <div class="timeline-icon">
+                        {% if history.status == 'PENDING' %}📝
+                        {% elif history.status == 'CONFIRMED' %}✅
+                        {% elif history.status == 'PROCESSING' %}⚙️
+                        {% elif history.status == 'SHIPPED' %}🚚
+                        {% elif history.status == 'DELIVERED' %}📦
+                        {% elif history.status == 'CANCELLED' %}❌
+                        {% else %}📌
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">{{ history.get_status_display }}</div>
+                        {% if history.notes %}
+                        <div class="timeline-desc">{{ history.notes }}</div>
+                        {% endif %}
+                        <div class="timeline-date">{{ history.created_at|date:"l, d F Y - h:i A" }}</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: #666;">কোনো আপডেট নেই</p>
+                {% endfor %}
+            </div>
+            
+            <!-- ডেলিভারি তথ্য -->
+            <div class="delivery-info">
+                <h3 style="margin-bottom: 15px;">ডেলিভারি তথ্য</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">প্রাপকের নাম</div>
+                        <div class="info-value">{{ order.full_name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">ফোন নম্বর</div>
+                        <div class="info-value">{{ order.phone }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">ঠিকানা</div>
+                        <div class="info-value">{{ order.address }}, {{ order.city }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">অর্ডার তারিখ</div>
+                        <div class="info-value">{{ order.created_at|date:"d M Y" }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- শেয়ার বাটন -->
+            <div class="share-buttons">
+                <a href="#" class="share-btn facebook">📘</a>
+                <a href="#" class="share-btn whatsapp">📱</a>
+                <a href="#" class="share-btn messenger">💬</a>
+            </div>
+            
+            <!-- রিফ্রেশ বাটন -->
+            <button class="refresh-btn" onclick="location.reload()">
+                🔄 রিফ্রেশ
+            </button>
+            
+            <!-- ব্যাক বাটন -->
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="{% url 'order_detail' order.order_number %}" style="color: #666;">← অর্ডার ডিটেইলে ফিরে যান</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        (function() {
+         // Django variables
+         var orderStatus = "{{ order.status }}";
+         var shouldRefresh = true;
+        
+            // চেক করুন রিফ্রেশ দরকার কিনা
+            if (orderStatus === 'DELIVERED' || orderStatus === 'CANCELLED') {
+                shouldRefresh = false;
+            }
+        
+            // অটো রিফ্রেশ
+            if (shouldRefresh) {
+                window.setTimeout(function() {
+                    window.location.reload();
+             }, 30000);
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রেজিস্টার - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo a {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .option-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            border-color: #2c5f2d;
+            box-shadow: 0 10px 30px rgba(44, 95, 45, 0.2);
+        }
+        
+        .option-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .option-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c5f2d;
+        }
+        
+        .option-desc {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .features {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .features h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .feature-item span {
+            color: #2c5f2d;
+            font-weight: bold;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .login-link a {
+            color: #2c5f2d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-home a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-home a:hover {
+            color: #2c5f2d;
+        }
+        
+        @media (max-width: 500px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <a href="/">
+                <span>🌵</span><br>
+                Cactus Shop
+            </a>
+        </div>
+        
+        <h2>যোগ দিন</h2>
+        <p class="subtitle">আপনার অ্যাকাউন্ট টাইপ নির্বাচন করুন</p>
+        
+        <div class="options">
+            <a href="{% url 'register_buyer' %}" class="option-card">
+                <div class="option-icon">🛍️</div>
+                <div class="option-title">ক্রেতা</div>
+                <div class="option-desc">
+                    ক্যাকটাস কিনুন, অর্ডার ট্র্যাক করুন, রিভিউ দিন
+                </div>
+            </a>
+            
+            <a href="{% url 'register_seller' %}" class="option-card">
+                <div class="option-icon">🏪</div>
+                <div class="option-title">বিক্রেতা</div>
+                <div class="option-desc">
+                    আপনার পণ্য বিক্রি করুন, অর্ডার ম্যানেজ করুন
+                </div>
+            </a>
+        </div>
+        
+        <div class="features">
+            <h3>✨ উভয়ের জন্য সুবিধা</h3>
+            <div class="feature-item">
+                <span>✓</span> ফ্রি ডেলিভারি (৫০০+ টাকায়)
+            </div>
+            <div class="feature-item">
+                <span>✓</span> সহজ পেমেন্ট (বিকাশ, নগদ)
+            </div>
+            <div class="feature-item">
+                <span>✓</span> ৭ দিন রিটার্ন পলিসি
+            </div>
+            <div class="feature-item">
+                <span>✓</span> ২৪/৭ সাপোর্ট
+            </div>
+        </div>
+        
+        <div class="login-link">
+            ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="{% url 'login' %}">লগইন করুন</a>
+        </div>
+        
+        <div class="back-home">
+            <a href="/">← হোমপেজে ফিরে যান</a>
+        </div>
+    </div>
+</body>
+</html>

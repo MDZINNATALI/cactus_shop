@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার কার্ট - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        /* নেভিগেশন বার */
+        .navbar {
+            background: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #2c5f2d;
+        }
+        
+        .cart-icon {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* প্রধান কন্টেইনার */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        /* কার্ট গ্রিড */
+        .cart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        /* কার্ট আইটেম লিস্ট */
+        .cart-items {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .cart-header {
+            display: grid;
+            grid-template-columns: 100px 2fr 1fr 1fr 50px;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 2px solid #2c5f2d;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 2fr 1fr 1fr 50px;
+            gap: 15px;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s;
+        }
+        
+        .cart-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .item-details h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .item-details .seller {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .item-price {
+            font-weight: bold;
+            color: #2c5f2d;
+            font-size: 1.2rem;
+        }
+        
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .item-quantity input {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .update-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .update-btn:hover {
+            background: #45a049;
+        }
+        
+        .item-total {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        .remove-btn {
+            color: #ff4444;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: color 0.3s;
+            text-align: center;
+        }
+        
+        .remove-btn:hover {
+            color: #cc0000;
+        }
+        
+        /* কার্ট সামারি */
+        .cart-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .cart-summary h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2c5f2d;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        .summary-row.total {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .free-shipping {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        
+        .shipping-progress {
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #2c5f2d;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #2c5f2d;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .checkout-btn:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 95, 45, 0.3);
+        }
+        
+        .continue-shopping {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .continue-shopping:hover {
+            text-decoration: underline;
+        }
+        
+        .clear-cart {
+            display: inline-block;
+            margin-left: 20px;
+            color: #ff4444;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .clear-cart:hover {
+            text-decoration: underline;
+        }
+        
+        /* খালি কার্ট */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .empty-cart-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-cart h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .empty-cart p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .empty-cart a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #2c5f2d;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+        }
+        
+        .empty-cart a:hover {
+            background: #1e401f;
+        }
+        
+        /* কুপন সেকশন */
+        .coupon-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .coupon-section h3 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .coupon-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .coupon-input input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .coupon-input button {
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .coupon-input button:hover {
+            background: #ff5252;
+        }
+        
+        /* রেসপনসিভ */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .cart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-header {
+                display: none;
+            }
+            
+            .cart-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .cart-item img {
+                margin: 0 auto;
+            }
+            
+            .item-quantity {
+                justify-content: center;
+            }
+            
+            .cart-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <span>🛒</span> Cactus Shop
+        </a>
+        <div class="nav-links">
+            <a href="/">হোম</a>
+            <a href="/products/">পণ্য</a>
+            <a href="/cart/" class="cart-icon">
+                🛒 কার্ট
+                {% if cart and cart.total_items %}
+                <span class="cart-count">{{ cart.total_items }}</span>
+                {% endif %}
+            </a>
+            {% if user.is_authenticated %}
+                <a href="/accounts/logout/">লগআউট</a>
+            {% else %}
+                <a href="/accounts/login/">লগইন</a>
+                <a href="/accounts/register-choice/">রেজিস্টার</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>আমার শপিং কার্ট</h1>
+        
+        {% if cart_items %}
+        <div class="cart-grid">
+            <!-- কার্ট আইটেম লিস্ট -->
+            <div class="cart-items">
+                <div class="cart-header">
+                    <div>ছবি</div>
+                    <div>পণ্য</div>
+                    <div>দাম</div>
+                    <div>পরিমাণ</div>
+                    <div>মোট</div>
+                </div>
+                
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    
+                    <div class="item-details">
+                        <h3>{{ item.product.name }}</h3>
+                        <p class="seller">বিক্রেতা: {{ item.product.seller.seller_profile.store_name }}</p>
+                    </div>
+                    
+                    <div class="item-price">৳ {{ item.product.get_display_price }}</div>
+                    
+                    <div class="item-quantity">
+                        <form method="post" action="{% url 'cart_update' item.product.id %}">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                            <button type="submit" class="update-btn">আপডেট</button>
+                        </form>
+                    </div>
+                    
+                    <div class="item-total">৳ {{ item.total_price }}</div>
+                    
+                    <a href="{% url 'cart_remove' item.product.id %}" class="remove-btn" 
+                       onclick="return confirm('এই পণ্যটি কার্ট থেকে সরাতে চান?')">×</a>
+                </div>
+                {% endfor %}
+                
+                <div style="margin-top: 20px;">
+                    <a href="{% url 'cart_clear' %}" class="clear-cart" 
+                       onclick="return confirm('সম্পূর্ণ কার্ট খালি করতে চান?')">🗑️ কার্ট খালি করুন</a>
+                </div>
+            </div>
+            
+            <!-- অর্ডার সামারি -->
+            <div class="cart-summary">
+                <h2>অর্ডার সামারি</h2>
+                
+                <div class="summary-row">
+                    <span>সাবটোটাল ({{ cart.total_items }}টি আইটেম)</span>
+                    <span>৳ {{ subtotal }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>ডেলিভারি চার্জ</span>
+                    <span>
+                        {% if shipping_cost == 0 %}
+                            <span style="color: green;">ফ্রি</span>
+                        {% else %}
+                            ৳ {{ shipping_cost }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <!-- ফ্রি শিপিং প্রোগ্রেস -->
+                {% if subtotal < 500 %}
+                <div class="shipping-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: '{{ subtotal|floatformat:0 }}'"></div>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">
+                        আরও ৳ {{ 500|add:subtotal }} খরচ করলে ফ্রি ডেলিভারি!
+                    </p>
+                </div>
+                {% else %}
+                <div class="free-shipping">
+                    🎉 আপনি ফ্রি ডেলিভারি পাচ্ছেন!
+                </div>
+                {% endif %}
+                
+                <div class="summary-row total">
+                    <span>মোট দাম</span>
+                    <span>৳ {{ total }}</span>
+                </div>
+                
+                <!-- কুপন সেকশন -->
+                <div class="coupon-section">
+                    <h3>কুপন কোড থাকলে দিন:</h3>
+                    <div class="coupon-input">
+                        <input type="text" placeholder="কুপন কোড" id="coupon">
+                        <button onclick="applyCoupon()">প্রয়োগ</button>
+                    </div>
+                </div>
+                
+                <a href="#" class="checkout-btn">✅ অর্ডার কনফার্ম করুন</a>
+                
+                <a href="/" class="continue-shopping">← কেনাকাটা চালিয়ে যান</a>
+            </div>
+        </div>
+        {% else %}
+        <!-- খালি কার্ট -->
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>আপনার কার্ট খালি!</h2>
+            <p>দেখুন আমাদের আকর্ষণীয় সব পণ্য</p>
+            <a href="/">শপিং শুরু করুন →</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // কুপন প্রয়োগ
+        function applyCoupon() {
+            const coupon = document.getElementById('coupon').value;
+            if (coupon.toLowerCase() === 'save10') {
+                alert('🎉 ১০% ডিসকাউন্ট প্রয়োগ করা হয়েছে!');
+            } else if (coupon.toLowerCase() === 'freeship') {
+                alert('🎉 ফ্রি শিপিং প্রয়োগ করা হয়েছে!');
+            } else if (coupon) {
+                alert('❌ ভুল কুপন কোড');
+            } else {
+                alert('দয়া করে কুপন কোড দিন');
+            }
+        }
+        
+        // পরিমাণ পরিবর্তনের সময় স্টক চেক
+        document.querySelectorAll('input[name="quantity"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const max = parseInt(this.max);
+                const value = parseInt(this.value);
+                if (value > max) {
+                    alert('সর্বোচ্চ ' + max + 'টি অর্ডার করতে পারবেন!');
+                    this.value = max;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

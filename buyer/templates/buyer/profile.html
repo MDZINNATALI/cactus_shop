@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোফাইল - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sidebar-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .user-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #e8f5e9;
+            color: #2c5f2d;
+            border-left-color: #2c5f2d;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .page-header p {
+            color: #666;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .profile-header {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .profile-title h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-title p {
+            color: #666;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #2c5f2d;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .readonly-field {
+            background: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #666;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            border-color: #333;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- সাইডবার (ড্যাশবোর্ডের মতো) -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">🛒 Cactus Shop</a>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ user.first_name|first|default:user.username|first|upper }}
+                </div>
+                <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="{% url 'buyer_dashboard' %}" class="nav-item">
+                    <i>📊</i> ড্যাশবোর্ড
+                </a>
+                <a href="{% url 'buyer_profile' %}" class="nav-item active">
+                    <i>👤</i> প্রোফাইল
+                </a>
+                <a href="{% url 'buyer_orders' %}" class="nav-item">
+                    <i>📦</i> আমার অর্ডার
+                </a>
+                <a href="{% url 'buyer_wishlist' %}" class="nav-item">
+                    <i>❤️</i> উইশলিস্ট
+                </a>
+                <a href="{% url 'buyer_reviews' %}" class="nav-item">
+                    <i>⭐</i> রিভিউ
+                </a>
+                <a href="{% url 'buyer_settings' %}" class="nav-item">
+                    <i>⚙️</i> সেটিংস
+                </a>
+                <a href="/" class="nav-item">
+                    <i>🏠</i> হোমপেজ
+                </a>
+                <a href="/accounts/logout/" class="nav-item">
+                    <i>🚪</i> লগআউট
+                </a>
+            </div>
+        </div>
+        
+        <!-- মূল কন্টেন্ট -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1>প্রোফাইল সেটিংস</h1>
+                <p>আপনার ব্যক্তিগত তথ্য আপডেট করুন</p>
+            </div>
+            
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        {{ user.first_name|first|default:user.username|first|upper }}
+                    </div>
+                    <div class="profile-title">
+                        <h2>{{ user.get_full_name|default:user.username }}</h2>
+                        <p>ক্রেতা সদস্য</p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ইউজারনেম</label>
+                            <input type="text" value="{{ user.username }}" class="readonly-field" readonly disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>ইমেইল *</label>
+                            <input type="email" name="email" value="{{ user.email }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>নামের প্রথম অংশ</label>
+                            <input type="text" name="first_name" value="{{ user.first_name }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>নামের শেষ অংশ</label>
+                            <input type="text" name="last_name" value="{{ user.last_name }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>মোবাইল নম্বর *</label>
+                            <input type="tel" name="phone" value="{{ user.phone }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>সদস্যতা তারিখ</label>
+                            <input type="text" value="{{ user.date_joined|date:'d M Y' }}" class="readonly-field" readonly disabled>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>ঠিকানা</label>
+                            <textarea name="address">{{ user.address }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="{% url 'buyer_dashboard' %}" class="btn btn-outline">বাতিল</a>
+                        <button type="submit" class="btn btn-primary">সংরক্ষণ করুন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

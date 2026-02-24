@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রিপোর্ট ও অ্যানালিটিক্স - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .admin-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .admin-avatar {
+            width: 80px;
+            height: 80px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+        
+        .admin-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .admin-role {
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            color: white;
+            border-left-color: #3498db;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .page-header p {
+            color: #666;
+        }
+        
+        .date-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .date-range input {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .date-range button {
+            padding: 8px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            border-left: 4px solid #3498db;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .kpi-title {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .kpi-icon.revenue { background: #e3f2fd; color: #1976d2; }
+        .kpi-icon.orders { background: #e8f5e9; color: #388e3c; }
+        .kpi-icon.customers { background: #fff3e0; color: #f57c00; }
+        .kpi-icon.products { background: #fce4ec; color: #c2185b; }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .kpi-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .change-positive { color: #27ae60; }
+        .change-negative { color: #e74c3c; }
+        
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: #333;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .card-actions select {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        /* চার্ট */
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .chart-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-bar {
+            width: 100%;
+            background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.3s;
+            min-height: 4px;
+        }
+        
+        .chart-bar.secondary {
+            background: linear-gradient(180deg, #e67e22 0%, #d35400 100%);
+        }
+        
+        .chart-label {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        /* টেবিল */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 12px;
+            color: #666;
+            font-weight: 600;
+            border-bottom: 2px solid #eee;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .rank-1 { color: gold; font-weight: bold; }
+        .rank-2 { color: silver; font-weight: bold; }
+        .rank-3 { color: #cd7f32; font-weight: bold; }
+        
+        /* এক্সপোর্ট বাটন */
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .export-btn {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .export-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .date-range {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .date-range input,
+            .date-range button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- সাইডবার -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">🛒 Cactus Shop</a>
+                <div style="font-size: 0.9rem; color: #95a5a6; margin-top: 5px;">অ্যাডমিন প্যানেল</div>
+            </div>
+            
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    {{ user.first_name|first|default:user.username|first|upper }}
+                </div>
+                <div class="admin-name">{{ user.get_full_name|default:user.username }}</div>
+                <div class="admin-role">সুপার অ্যাডমিন</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="{% url 'admin_dashboard' %}" class="nav-item">
+                    <i>📊</i> ড্যাশবোর্ড
+                </a>
+                <a href="{% url 'admin_all_users' %}" class="nav-item">
+                    <i>👥</i> ইউজার ম্যানেজমেন্ট
+                </a>
+                <a href="{% url 'admin_pending_sellers' %}" class="nav-item">
+                    <i>⏳</i> পেন্ডিং সেলার
+                </a>
+                <a href="{% url 'admin_all_sellers' %}" class="nav-item">
+                    <i>🏪</i> সেলার লিস্ট
+                </a>
+                <a href="{% url 'admin_pending_products' %}" class="nav-item">
+                    <i>📦</i> পেন্ডিং পণ্য
+                </a>
+                <a href="{% url 'admin_all_products' %}" class="nav-item">
+                    <i>🛍️</i> সব পণ্য
+                </a>
+                <a href="{% url 'admin_all_orders' %}" class="nav-item">
+                    <i>📋</i> অর্ডার
+                </a>
+                <a href="{% url 'admin_reports' %}" class="nav-item active">
+                    <i>📈</i> রিপোর্ট
+                </a>
+                <a href="{% url 'admin_settings' %}" class="nav-item">
+                    <i>⚙️</i> সেটিংস
+                </a>
+                <a href="/" class="nav-item">
+                    <i>🏠</i> হোমপেজ
+                </a>
+                <a href="/accounts/logout/" class="nav-item">
+                    <i>🚪</i> লগআউট
+                </a>
+            </div>
+        </div>
+        
+        <!-- মূল কন্টেন্ট -->
+        <div class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>রিপোর্ট ও অ্যানালিটিক্স</h1>
+                    <p>আপনার বিজনেসের পারফরম্যান্স ট্র্যাক করুন</p>
+                </div>
+                <div class="date-range">
+                    <input type="date" value="2026-02-01">
+                    <span>—</span>
+                    <input type="date" value="2026-02-28">
+                    <button>প্রয়োগ</button>
+                </div>
+            </div>
+            
+            <!-- KPI কার্ড -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">মোট বিক্রয়</span>
+                        <span class="kpi-icon revenue">💰</span>
+                    </div>
+                    <div class="kpi-value">৳ ৫,৮৪,২৫০</div>
+                    <div class="kpi-change change-positive">
+                        ↑ ১২.৫% পূর্ববর্তী মাসের তুলনায়
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">মোট অর্ডার</span>
+                        <span class="kpi-icon orders">📦</span>
+                    </div>
+                    <div class="kpi-value">২৩৪</div>
+                    <div class="kpi-change change-positive">
+                        ↑ ৮.৩% পূর্ববর্তী মাসের তুলনায়
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">গড় অর্ডার মূল্য</span>
+                        <span class="kpi-icon customers">📊</span>
+                    </div>
+                    <div class="kpi-value">৳ ২,৪৯৫</div>
+                    <div class="kpi-change change-positive">
+                        ↑ ৩.২% পূর্ববর্তী মাসের তুলনায়
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">কনভার্সন রেট</span>
+                        <span class="kpi-icon products">📈</span>
+                    </div>
+                    <div class="kpi-value">২.৪%</div>
+                    <div class="kpi-change change-negative">
+                        ↓ ০.৫% পূর্ববর্তী মাসের তুলনায়
+                    </div>
+                </div>
+            </div>
+            
+            <!-- এক্সপোর্ট বাটন -->
+            <div class="export-buttons">
+                <button class="export-btn">📥 PDF ডাউনলোড</button>
+                <button class="export-btn">📊 Excel ডাউনলোড</button>
+                <button class="export-btn">📧 ইমেইল পাঠান</button>
+            </div>
+            
+            <!-- রিপোর্ট গ্রিড -->
+            <div class="reports-grid">
+                <!-- মাসিক বিক্রয় চার্ট -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>মাসিক বিক্রয় রিপোর্ট</h2>
+                        <div class="card-actions">
+                            <select>
+                                <option>২০২৬</option>
+                                <option>২০২৫</option>
+                                <option>২০২৪</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 180px;"></div>
+                            <span class="chart-label">জানু</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 150px;"></div>
+                            <span class="chart-label">ফেব্রু</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 220px;"></div>
+                            <span class="chart-label">মার্চ</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 190px;"></div>
+                            <span class="chart-label">এপ্রিল</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 210px;"></div>
+                            <span class="chart-label">মে</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 250px;"></div>
+                            <span class="chart-label">জুন</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 200px;"></div>
+                            <span class="chart-label">জুলাই</span>
+                        </div>
+                        <div class="chart-bar-group">
+                            <div class="chart-bar" style="height: 230px;"></div>
+                            <span class="chart-label">অগাস্ট</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ক্যাটাগরি অনুযায়ী বিক্রয় -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>ক্যাটাগরি ওয়াইজ বিক্রয়</h2>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>ক্যাকটাস</span>
+                            <span style="font-weight: bold;">৪৫%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                            <div style="width: 45%; height: 100%; background: #3498db; border-radius: 4px;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin: 15px 0 10px;">
+                            <span>সুকুলেন্ট</span>
+                            <span style="font-weight: bold;">৩০%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                            <div style="width: 30%; height: 100%; background: #e67e22; border-radius: 4px;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin: 15px 0 10px;">
+                            <span>হোম ডেকোর</span>
+                            <span style="font-weight: bold;">১৫%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                            <div style="width: 15%; height: 100%; background: #27ae60; border-radius: 4px;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin: 15px 0 10px;">
+                            <span>অ্যাকসেসরিজ</span>
+                            <span style="font-weight: bold;">১০%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                            <div style="width: 10%; height: 100%; background: #e74c3c; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- দ্বিতীয় সারি -->
+            <div class="reports-grid">
+                <!-- টপ সেলার -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>টপ সেলার</h2>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>র‍্যাংক</th>
+                                    <th>স্টোর</th>
+                                    <th>বিক্রয়</th>
+                                    <th>অর্ডার</th>
+                                    <th>রেটিং</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="rank-1">🏆 ১</span></td>
+                                    <td>গ্রিন প্লানেট</td>
+                                    <td>৳ ১,৮৪,৫০০</td>
+                                    <td>১২৪</td>
+                                    <td>৪.৮ ★</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-2">🥈 ২</span></td>
+                                    <td>ক্যাকটাস হাউস</td>
+                                    <td>৳ ১,৪২,৮০০</td>
+                                    <td>৯৮</td>
+                                    <td>৪.৬ ★</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rank-3">🥉 ৩</span></td>
+                                    <td>সুকুলেন্ট স্টোর</td>
+                                    <td>৳ ১,১২,৪০০</td>
+                                    <td>৮২</td>
+                                    <td>৪.৫ ★</td>
+                                </tr>
+                                <tr>
+                                    <td>৪</td>
+                                    <td>ন্যাচারাল বিউটি</td>
+                                    <td>৳ ৮৯,৬০০</td>
+                                    <td>৬৭</td>
+                                    <td>৪.৪ ★</td>
+                                </tr>
+                                <tr>
+                                    <td>৫</td>
+                                    <td>প্লান্টার্স হাব</td>
+                                    <td>৳ ৭৫,২০০</td>
+                                    <td>৫৪</td>
+                                    <td>৪.৩ ★</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- টপ প্রোডাক্ট -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>টপ সেলিং প্রোডাক্ট</h2>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>পণ্য</th>
+                                    <th>বিক্রয়</th>
+                                    <th>স্টক</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>গোলাকার ক্যাকটাস</td>
+                                    <td>২৫৬টি</td>
+                                    <td>৪২টি</td>
+                                </tr>
+                                <tr>
+                                    <td>রঙিন সুকুলেন্ট</td>
+                                    <td>১৮৯টি</td>
+                                    <td>২৩টি</td>
+                                </tr>
+                                <tr>
+                                    <td>মিনি গার্ডেন সেট</td>
+                                    <td>১৪৫টি</td>
+                                    <td>১৫টি</td>
+                                </tr>
+                                <tr>
+                                    <td>হাতির ক্যাকটাস</td>
+                                    <td>১২৩টি</td>
+                                    <td>৮টি</td>
+                                </tr>
+                                <tr>
+                                    <td>সিরামিক পট</td>
+                                    <td>১১২টি</td>
+                                    <td>৩৪টি</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- তৃতীয় সারি - স্ট্যাটাস ডিস্ট্রিবিউশন -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h2>অর্ডার স্ট্যাটাস ডিস্ট্রিবিউশন</h2>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; color: #f39c12;">📝</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;">২৮</div>
+                        <div>পেন্ডিং</div>
+                        <div style="font-size: 0.9rem; color: #666;">১২%</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; color: #3498db;">🚚</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;">৪৫</div>
+                        <div>শিপড</div>
+                        <div style="font-size: 0.9rem; color: #666;">১৯%</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; color: #27ae60;">📦</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;">১৫৬</div>
+                        <div>ডেলিভারড</div>
+                        <div style="font-size: 0.9rem; color: #666;">৬৯%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

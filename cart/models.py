@@ -1,0 +1,59 @@
+from django.db import models
+from django.conf import settings
+from products.models import Product
+
+class Cart(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='cart'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Cart - {self.user.username}"
+    
+    @property
+    def total_items(self):
+        return sum(item.quantity for item in self.items.all())
+    
+    @property
+    def subtotal(self):
+        return sum(item.total_price for item in self.items.all())
+    
+    @property
+    def shipping_cost(self):
+        # ৫০০ টাকার উপরে ফ্রি শিপিং
+        if self.subtotal >= 500:
+            return 0
+        return 50
+    
+    @property
+    def total(self):
+        return self.subtotal + self.shipping_cost
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(
+        Cart, 
+        on_delete=models.CASCADE,
+        related_name='items'
+    )
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE,
+        related_name='cart_items'
+    )
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['cart', 'product']  # একই প্রোডাক্ট একবারই থাকবে
+    
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
+    
+    @property
+    def total_price(self):
+        return self.product.get_display_price() * self.quantity

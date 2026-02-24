@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ক্রেতা রেজিস্টার - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo a {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .user-type {
+            text-align: center;
+            background: #e8f5e9;
+            color: #2c5f2d;
+            padding: 10px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2c5f2d;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .password-input {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        .strength-bar-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .terms {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .terms input {
+            width: auto;
+        }
+        
+        .terms a {
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-register:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 95, 45, 0.4);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .login-link a {
+            color: #2c5f2d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .back-link a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link a:hover {
+            color: #2c5f2d;
+        }
+        
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <a href="/">
+                <span>🌵</span><br>
+                Cactus Shop
+            </a>
+        </div>
+        
+        <h2>ক্রেতা হিসেবে রেজিস্টার</h2>
+        <div class="user-type">🛍️ ক্রেতা অ্যাকাউন্ট</div>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name" class="required">নামের প্রথম অংশ</label>
+                    <input type="text" id="first_name" name="first_name" required placeholder="যেমন: রহিম">
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">নামের শেষ অংশ</label>
+                    <input type="text" id="last_name" name="last_name" placeholder="যেমন: মিয়া">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="username" class="required">ইউজারনেম</label>
+                <input type="text" id="username" name="username" required placeholder="ইউজারনেম দিন">
+            </div>
+            
+            <div class="form-group">
+                <label for="email" class="required">ইমেইল</label>
+                <input type="email" id="email" name="email" required placeholder="example@email.com">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password" class="required">পাসওয়ার্ড</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required placeholder="********">
+                        <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-bar-fill" id="strength-fill"></div>
+                        </div>
+                        <span id="strength-text">পাসওয়ার্ড শক্তি: দুর্বল</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password" class="required">পাসওয়ার্ড (আবার)</label>
+                    <div class="password-input">
+                        <input type="password" id="confirm_password" name="confirm_password" required placeholder="********">
+                        <span class="toggle-password" onclick="togglePassword('confirm_password')">👁️</span>
+                    </div>
+                    <div id="password-match" style="font-size: 0.85rem; margin-top: 5px;"></div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone" class="required">মোবাইল নম্বর</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="০১XXXXXXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">লিঙ্গ</label>
+                    <select id="gender" name="gender">
+                        <option value="">নির্বাচন করুন</option>
+                        <option value="male">পুরুষ</option>
+                        <option value="female">মহিলা</option>
+                        <option value="other">অন্যান্য</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="address" class="required">ঠিকানা</label>
+                <textarea id="address" name="address" required placeholder="আপনার সম্পূর্ণ ঠিকানা দিন"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="city">শহর/জেলা</label>
+                <input type="text" id="city" name="city" placeholder="যেমন: ঢাকা">
+            </div>
+            
+            <div class="terms">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">আমি <a href="#">শর্তাবলী</a> এবং <a href="#">গোপনীয়তা নীতি</a> মেনে নিচ্ছি</label>
+            </div>
+            
+            <button type="submit" class="btn-register">রেজিস্টার করুন</button>
+        </form>
+        
+        <div class="login-link">
+            ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="{% url 'login' %}">লগইন করুন</a>
+        </div>
+        
+        <div class="back-link">
+            <a href="{% url 'register_choice' %}">← পিছনে যান</a>
+        </div>
+    </div>
+    
+    <script>
+        // পাসওয়ার্ড টগল
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleIcon = event.target;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '🔒';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+        
+        // পাসওয়ার্ড শক্তি চেক
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.getElementById('strength-fill');
+            const strengthText = document.getElementById('strength-text');
+            
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]+/)) strength += 25;
+            if (password.match(/[A-Z]+/)) strength += 25;
+            if (password.match(/[0-9]+/)) strength += 25;
+            
+            strengthFill.style.width = strength + '%';
+            
+            if (strength <= 25) {
+                strengthFill.style.backgroundColor = '#ff4444';
+                strengthText.textContent = 'পাসওয়ার্ড শক্তি: দুর্বল';
+            } else if (strength <= 50) {
+                strengthFill.style.backgroundColor = '#ffaa00';
+                strengthText.textContent = 'পাসওয়ার্ড শক্তি: মাঝারি';
+            } else if (strength <= 75) {
+                strengthFill.style.backgroundColor = '#00aa00';
+                strengthText.textContent = 'পাসওয়ার্ড শক্তি: ভালো';
+            } else {
+                strengthFill.style.backgroundColor = '#2c5f2d';
+                strengthText.textContent = 'পাসওয়ার্ড শক্তি: শক্তিশালী';
+            }
+        });
+        
+        // পাসওয়ার্ড ম্যাচ চেক
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirm = this.value;
+            const matchDiv = document.getElementById('password-match');
+            
+            if (password === confirm) {
+                matchDiv.innerHTML = '✅ পাসওয়ার্ড মিলেছে';
+                matchDiv.style.color = 'green';
+            } else {
+                matchDiv.innerHTML = '❌ পাসওয়ার্ড মেলেনি';
+                matchDiv.style.color = 'red';
+            }
+        });
+        
+        // ফোন নম্বর ভ্যালিডেশন
+        document.getElementById('phone').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

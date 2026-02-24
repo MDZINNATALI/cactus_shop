@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার পণ্য - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sidebar-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .store-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .store-logo {
+            width: 80px;
+            height: 80px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+        
+        .store-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #e8f5e9;
+            color: #2c5f2d;
+            border-left-color: #2c5f2d;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .btn-primary {
+            padding: 12px 25px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: #2c5f2d;
+            color: white;
+            border-color: #2c5f2d;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            padding: 12px 25px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            z-index: 2;
+        }
+        
+        .badge-pending {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .badge-approved {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-out {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-category {
+            color: #2c5f2d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            margin-bottom: 10px;
+        }
+        
+        .product-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #1e401f;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .btn-view {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- সাইডবার -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">🛒 Cactus Shop</a>
+            </div>
+            
+            <div class="store-info">
+                <div class="store-logo">
+                    {{ user.seller_profile.store_name|first|upper }}
+                </div>
+                <div class="store-name">{{ user.seller_profile.store_name }}</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="{% url 'seller_dashboard' %}" class="nav-item">
+                    <i>📊</i> ড্যাশবোর্ড
+                </a>
+                <a href="{% url 'seller_products' %}" class="nav-item active">
+                    <i>📦</i> আমার পণ্য
+                </a>
+                <a href="{% url 'add_product' %}" class="nav-item">
+                    <i>➕</i> নতুন পণ্য
+                </a>
+                <a href="{% url 'seller_orders' %}" class="nav-item">
+                    <i>📋</i> অর্ডার
+                </a>
+                <a href="{% url 'seller_reviews' %}" class="nav-item">
+                    <i>⭐</i> রিভিউ
+                </a>
+                <a href="{% url 'seller_settings' %}" class="nav-item">
+                    <i>⚙️</i> সেটিংস
+                </a>
+                <a href="/" class="nav-item">
+                    <i>🏠</i> হোমপেজ
+                </a>
+                <a href="/accounts/logout/" class="nav-item">
+                    <i>🚪</i> লগআউট
+                </a>
+            </div>
+        </div>
+        
+        <!-- মূল কন্টেন্ট -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1>আমার পণ্য</h1>
+                <p>আপনার স্টোরের সকল পণ্যের তালিকা</p>
+            </div>
+            
+            <div class="header-actions">
+                <a href="{% url 'add_product' %}" class="btn-primary">
+                    <i>➕</i> নতুন পণ্য যোগ করুন
+                </a>
+                
+                <div class="filter-bar">
+                    <a href="?status=all" class="filter-btn {% if not request.GET.status or request.GET.status == 'all' %}active{% endif %}">সব</a>
+                    <a href="?status=approved" class="filter-btn {% if request.GET.status == 'approved' %}active{% endif %}">অ্যাপ্রুভড</a>
+                    <a href="?status=pending" class="filter-btn {% if request.GET.status == 'pending' %}active{% endif %}">পেন্ডিং</a>
+                    <a href="?status=out_of_stock" class="filter-btn {% if request.GET.status == 'out_of_stock' %}active{% endif %}">স্টক আউট</a>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" placeholder="পণ্যের নাম দিয়ে খুঁজুন...">
+                <button>🔍 খুঁজুন</button>
+            </div>
+            
+            {% if products %}
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    {% if not product.is_approved %}
+                        <span class="product-badge badge-pending">⏳ পেন্ডিং</span>
+                    {% elif product.stock == 0 %}
+                        <span class="product-badge badge-out">❌ স্টক আউট</span>
+                    {% else %}
+                        <span class="product-badge badge-approved">✅ অ্যাপ্রুভড</span>
+                    {% endif %}
+                    
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    
+                    <div class="product-info">
+                        <span class="product-category">{{ product.category.name }}</span>
+                        <h3 class="product-name">{{ product.name|truncatechars:40 }}</h3>
+                        <div class="product-price">৳ {{ product.get_display_price }}</div>
+                        
+                        <div class="product-stats">
+                            <span>📦 স্টক: {{ product.stock }}</span>
+                            <span>👀 দেখা: {{ product.views_count }}</span>
+                            <span>💰 বিক্রি: {{ product.sold_count }}</span>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <a href="{% url 'edit_product' product.id %}" class="btn btn-edit">✏️ এডিট</a>
+                            <a href="{% url 'delete_product' product.id %}" class="btn btn-delete">🗑️ ডিলিট</a>
+                            <a href="{% url 'product_detail' product.slug %}" class="btn btn-view" target="_blank">👁️ দেখুন</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <h2>কোনো পণ্য নেই</h2>
+                <p>আপনি এখনও কোনো পণ্য যোগ করেননি। আপনার প্রথম পণ্য যোগ করুন।</p>
+                <a href="{% url 'add_product' %}" class="btn-primary">পণ্য যোগ করুন</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

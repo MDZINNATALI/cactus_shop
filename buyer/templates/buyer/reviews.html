@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার রিভিউ - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sidebar-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .user-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #e8f5e9;
+            color: #2c5f2d;
+            border-left-color: #2c5f2d;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+        }
+        
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .review-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .review-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .review-product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .review-product-info {
+            flex: 1;
+        }
+        
+        .review-product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .review-product-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .review-rating {
+            color: #ffc107;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+        
+        .review-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .review-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .review-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline {
+            border: 1px solid #2c5f2d;
+            color: #2c5f2d;
+            background: transparent;
+        }
+        
+        .btn-outline:hover {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #cc0000;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 25px;
+        }
+        
+        .empty-state a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #2c5f2d;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .review-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .review-product-image {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- সাইডবার -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">🛒 Cactus Shop</a>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ user.first_name|first|default:user.username|first|upper }}
+                </div>
+                <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="{% url 'buyer_dashboard' %}" class="nav-item">
+                    <i>📊</i> ড্যাশবোর্ড
+                </a>
+                <a href="{% url 'buyer_profile' %}" class="nav-item">
+                    <i>👤</i> প্রোফাইল
+                </a>
+                <a href="{% url 'buyer_orders' %}" class="nav-item">
+                    <i>📦</i> আমার অর্ডার
+                </a>
+                <a href="{% url 'buyer_wishlist' %}" class="nav-item">
+                    <i>❤️</i> উইশলিস্ট
+                </a>
+                <a href="{% url 'buyer_reviews' %}" class="nav-item active">
+                    <i>⭐</i> রিভিউ
+                </a>
+                <a href="{% url 'buyer_settings' %}" class="nav-item">
+                    <i>⚙️</i> সেটিংস
+                </a>
+                <a href="/" class="nav-item">
+                    <i>🏠</i> হোমপেজ
+                </a>
+                <a href="/accounts/logout/" class="nav-item">
+                    <i>🚪</i> লগআউট
+                </a>
+            </div>
+        </div>
+        
+        <!-- মূল কন্টেন্ট -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1>আমার রিভিউ</h1>
+                <p>আপনার দেওয়া সকল রিভিউ</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">১২</div>
+                    <div class="stat-label">মোট রিভিউ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">৪.৫</div>
+                    <div class="stat-label">গড় রেটিং</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">৮</div>
+                    <div class="stat-label">অ্যাপ্রুভড</div>
+                </div>
+            </div>
+            
+            <!-- ডেমো রিভিউ -->
+            <div class="reviews-list">
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://via.placeholder.com/80" alt="Product" class="review-product-image">
+                        <div class="review-product-info">
+                            <h3 class="review-product-name">গোলাকার ক্যাকটাস</h3>
+                            <div class="review-product-meta">অর্ডার #ORD-2024-00123 | ১৫ জানু, ২০২৪</div>
+                            <div class="review-rating">★★★★★</div>
+                            <div class="review-date">রিভিউ দিয়েছেন: ২০ জানু, ২০২৪</div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-content">
+                        <p>পণ্যটি খুবই ভালো। স্বাস্থ্যকর এবং ঠিক সময়ে ডেলিভারি দিয়েছে। প্যাকেজিংও ছিল চমৎকার। ক্যাকটাসটি এখনও পর্যন্ত খুব ভালো আছে। নিয়মিত পানি দিতে হবে না, তাই অফিসের জন্য পারফেক্ট।</p>
+                    </div>
+                    
+                    <div class="review-actions">
+                        <button class="btn btn-outline">✏️ এডিট</button>
+                        <button class="btn btn-danger">🗑️ ডিলিট</button>
+                    </div>
+                </div>
+                
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://via.placeholder.com/80" alt="Product" class="review-product-image">
+                        <div class="review-product-info">
+                            <h3 class="review-product-name">রঙিন সুকুলেন্ট সেট</h3>
+                            <div class="review-product-meta">অর্ডার #ORD-2024-00145 | ৫ ফেব্রু, ২০২৪</div>
+                            <div class="review-rating">★★★★☆</div>
+                            <div class="review-date">রিভিউ দিয়েছেন: ১০ ফেব্রু, ২০২৪</div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-content">
+                        <p>সুকুলেন্টগুলো খুবই সুন্দর। রঙগুলো চমৎকার। তবে একটি গাছ একটু শুকনো ছিল। হয়তো ডেলিভারির সময় হয়েছে। বাকিগুলো ভালো আছে। সাপোর্ট টিম খুবই সহায়তা করেছে।</p>
+                    </div>
+                    
+                    <div class="review-actions">
+                        <span class="status-badge" style="background: #ffc107; color: #000; padding: 5px 15px; border-radius: 20px;">পেন্ডিং</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

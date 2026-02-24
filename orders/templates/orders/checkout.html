@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>চেকআউট - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            padding: 20px 0;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #999;
+        }
+        
+        .step.active {
+            color: #2c5f2d;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .step.active .step-number {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .checkout-form {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2c5f2d;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .payment-method {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-method.selected {
+            border-color: #2c5f2d;
+            background: #e8f5e9;
+        }
+        
+        .payment-method input {
+            display: none;
+        }
+        
+        .payment-method span {
+            font-size: 0.9rem;
+        }
+        
+        .order-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .summary-item-details {
+            flex: 1;
+        }
+        
+        .summary-item-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .summary-item-price {
+            color: #2c5f2d;
+            font-weight: bold;
+        }
+        
+        .summary-item-quantity {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 1rem;
+            color: #555;
+        }
+        
+        .summary-row.total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .place-order-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .place-order-btn:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 95, 45, 0.3);
+        }
+        
+        .back-to-cart {
+            display: inline-block;
+            margin-top: 15px;
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .back-to-cart:hover {
+            color: #2c5f2d;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkout-steps {
+                gap: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">🛒 Cactus Shop</a>
+    </nav>
+    
+    <div class="checkout-steps">
+        <div class="step">
+            <span class="step-number">1</span>
+            <span>কার্ট</span>
+        </div>
+        <div class="step active">
+            <span class="step-number">2</span>
+            <span>চেকআউট</span>
+        </div>
+        <div class="step">
+            <span class="step-number">3</span>
+            <span>অর্ডার কনফার্মেশন</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="checkout-grid">
+            <!-- চেকআউট ফর্ম -->
+            <form method="post" action="{% url 'place_order' %}" class="checkout-form">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h2>📋 যোগাযোগের তথ্য</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>নাম *</label>
+                            <input type="text" name="full_name" value="{{ initial.full_name }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>ইমেইল *</label>
+                            <input type="email" name="email" value="{{ initial.email }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>মোবাইল নম্বর *</label>
+                            <input type="tel" name="phone" value="{{ initial.phone }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>বিকল্প মোবাইল</label>
+                            <input type="tel" name="alternative_phone">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>🏠 ডেলিভারি ঠিকানা</h2>
+                    
+                    <div class="form-group">
+                        <label>ঠিকানা *</label>
+                        <textarea name="address" required>{{ initial.address }}</textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>শহর *</label>
+                            <input type="text" name="city" value="Dhaka" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>এলাকা</label>
+                            <input type="text" name="area">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>পোস্টাল কোড</label>
+                        <input type="text" name="postal_code">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>💰 পেমেন্ট মেথড</h2>
+                    
+                    <div class="payment-methods">
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="CASH" checked>
+                            <span>💵 ক্যাশ অন ডেলিভারি</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="BKASH">
+                            <span>📱 বিকাশ</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="NAGAD">
+                            <span>📱 নগদ</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>📝 অতিরিক্ত তথ্য (ঐচ্ছিক)</h2>
+                    
+                    <div class="form-group">
+                        <label>বিশেষ অনুরোধ</label>
+                        <textarea name="notes" placeholder="যেমন: সন্ধ্যা ৬টার পরে ডেলিভারি দিন..."></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="place-order-btn">✅ অর্ডার কনফার্ম করুন</button>
+                
+                <a href="{% url 'cart_detail' %}" class="back-to-cart">← কার্টে ফিরে যান</a>
+            </form>
+            
+            <!-- অর্ডার সামারি -->
+            <div class="order-summary">
+                <h2 style="margin-bottom: 20px;">আপনার অর্ডার</h2>
+                
+                {% for item in cart_items %}
+                <div class="summary-item">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    <div class="summary-item-details">
+                        <div class="summary-item-name">{{ item.product.name|truncatechars:30 }}</div>
+                        <div class="summary-item-price">৳ {{ item.product.get_display_price }}</div>
+                        <div class="summary-item-quantity">পরিমাণ: {{ item.quantity }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="summary-row">
+                    <span>সাবটোটাল ({{ cart.total_items }}টি আইটেম)</span>
+                    <span>৳ {{ subtotal }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>ডেলিভারি চার্জ</span>
+                    <span>{% if shipping_cost == 0 %}ফ্রি{% else %}৳ {{ shipping_cost }}{% endif %}</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span>মোট দাম</span>
+                    <span>৳ {{ total }}</span>
+                </div>
+                
+                <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <p style="color: #666; font-size: 0.9rem;">
+                        <strong>নোট:</strong> অর্ডার কনফার্ম করার পর আপনি একটি কনফার্মেশন ইমেইল পাবেন।
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // পেমেন্ট মেথড সিলেক্ট
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+        
+        // ফোন নম্বর ভ্যালিডেশন
+        document.querySelector('input[name="phone"]').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        
+        // ফর্ম সাবমিট কনফার্মেশন
+        document.querySelector('.checkout-form').addEventListener('submit', function(e) {
+            if (!confirm('আপনি কি অর্ডারটি কনফার্ম করতে চান?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

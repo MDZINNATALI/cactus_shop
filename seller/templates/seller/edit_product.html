@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পণ্য এডিট - {{ product.name }} - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sidebar-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .store-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .store-logo {
+            width: 80px;
+            height: 80px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+        
+        .store-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #e8f5e9;
+            color: #2c5f2d;
+            border-left-color: #2c5f2d;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .page-header p {
+            color: #666;
+        }
+        
+        .product-status {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+        
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2c5f2d;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .current-images {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .current-images h3 {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .image-item {
+            position: relative;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .image-checkbox {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: white;
+            border-radius: 4px;
+            padding: 2px;
+        }
+        
+        .image-checkbox input {
+            width: auto;
+        }
+        
+        .new-image-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        
+        .new-image-upload:hover {
+            border-color: #2c5f2d;
+            background: #f8f9fa;
+        }
+        
+        .price-input {
+            position: relative;
+        }
+        
+        .price-input::before {
+            content: "৳";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .price-input input {
+            padding-left: 30px;
+        }
+        
+        .stock-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stock-input input {
+            flex: 1;
+        }
+        
+        .stock-unit {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #6c757d;
+            color: #6c757d;
+        }
+        
+        .btn-outline:hover {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #2c5f2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h4 {
+            color: #2c5f2d;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- সাইডবার -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">🛒 Cactus Shop</a>
+            </div>
+            
+            <div class="store-info">
+                <div class="store-logo">
+                    {{ user.seller_profile.store_name|first|upper }}
+                </div>
+                <div class="store-name">{{ user.seller_profile.store_name }}</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="{% url 'seller_dashboard' %}" class="nav-item">
+                    <i>📊</i> ড্যাশবোর্ড
+                </a>
+                <a href="{% url 'seller_products' %}" class="nav-item active">
+                    <i>📦</i> আমার পণ্য
+                </a>
+                <a href="{% url 'add_product' %}" class="nav-item">
+                    <i>➕</i> নতুন পণ্য
+                </a>
+                <a href="{% url 'seller_orders' %}" class="nav-item">
+                    <i>📋</i> অর্ডার
+                </a>
+                <a href="{% url 'seller_reviews' %}" class="nav-item">
+                    <i>⭐</i> রিভিউ
+                </a>
+                <a href="{% url 'seller_settings' %}" class="nav-item">
+                    <i>⚙️</i> সেটিংস
+                </a>
+                <a href="/" class="nav-item">
+                    <i>🏠</i> হোমপেজ
+                </a>
+                <a href="/accounts/logout/" class="nav-item">
+                    <i>🚪</i> লগআউট
+                </a>
+            </div>
+        </div>
+        
+        <!-- মূল কন্টেন্ট -->
+        <div class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>পণ্য এডিট করুন</h1>
+                    <p>{{ product.name }}</p>
+                </div>
+                <div class="product-status {% if product.is_approved %}status-approved{% else %}status-pending{% endif %}">
+                    {% if product.is_approved %}
+                        ✅ অ্যাপ্রুভড
+                    {% else %}
+                        ⏳ পেন্ডিং
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>📝 নোট</h4>
+                <p>পণ্যের তথ্য আপডেট করার পর তা আবার অ্যাডমিন অ্যাপ্রুভালের প্রয়োজন হবে।</p>
+            </div>
+            
+            <div class="form-container">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-grid">
+                        <!-- পণ্যের নাম -->
+                        <div class="form-group full-width">
+                            <label for="name" class="required">পণ্যের নাম</label>
+                            <input type="text" id="name" name="name" required 
+                                   value="{{ product.name }}">
+                        </div>
+                        
+                        <!-- ক্যাটাগরি -->
+                        <div class="form-group">
+                            <label for="category" class="required">ক্যাটাগরি</label>
+                            <select id="category" name="category" required>
+                                <option value="">ক্যাটাগরি নির্বাচন করুন</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" 
+                                        {% if category.id == product.category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- স্টক -->
+                        <div class="form-group">
+                            <label for="stock" class="required">স্টক পরিমাণ</label>
+                            <div class="stock-input">
+                                <input type="number" id="stock" name="stock" required 
+                                       min="0" value="{{ product.stock }}">
+                                <span class="stock-unit">টি</span>
+                            </div>
+                        </div>
+                        
+                        <!-- মূল্য -->
+                        <div class="form-group">
+                            <label for="price" class="required">মূল্য (৳)</label>
+                            <div class="price-input">
+                                <input type="number" id="price" name="price" required 
+                                       min="0" step="0.01" value="{{ product.price }}">
+                            </div>
+                        </div>
+                        
+                        <!-- ডিসকাউন্ট মূল্য -->
+                        <div class="form-group">
+                            <label for="discount_price">ডিসকাউন্ট মূল্য</label>
+                            <div class="price-input">
+                                <input type="number" id="discount_price" name="discount_price" 
+                                       min="0" step="0.01" value="{{ product.discount_price|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <!-- বিবরণ -->
+                        <div class="form-group full-width">
+                            <label for="description" class="required">পণ্যের বিবরণ</label>
+                            <textarea id="description" name="description" required>{{ product.description }}</textarea>
+                        </div>
+                        
+                        <!-- বর্তমান ছবি -->
+                        <div class="form-group full-width">
+                            <label>বর্তমান ছবি</label>
+                            <div class="current-images">
+                                <div class="image-grid">
+                                    {% if product.image %}
+                                    <div class="image-item">
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                        <div class="image-checkbox">
+                                            <input type="checkbox" name="keep_image" value="image" checked> রাখুন
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if product.image2 %}
+                                    <div class="image-item">
+                                        <img src="{{ product.image2.url }}" alt="{{ product.name }}">
+                                        <div class="image-checkbox">
+                                            <input type="checkbox" name="keep_image2" value="image2" checked> রাখুন
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if product.image3 %}
+                                    <div class="image-item">
+                                        <img src="{{ product.image3.url }}" alt="{{ product.name }}">
+                                        <div class="image-checkbox">
+                                            <input type="checkbox" name="keep_image3" value="image3" checked> রাখুন
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- নতুন ছবি আপলোড -->
+                        <div class="form-group">
+                            <label>নতুন প্রধান ছবি</label>
+                            <input type="file" name="image" accept="image/*">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>নতুন ছবি ২</label>
+                            <input type="file" name="image2" accept="image/*">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>নতুন ছবি ৩</label>
+                            <input type="file" name="image3" accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="{% url 'seller_products' %}" class="btn btn-outline">বাতিল</a>
+                        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger">ডিলিট</a>
+                        <button type="submit" class="btn btn-primary">আপডেট করুন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ভ্যালিডেশন
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const price = parseFloat(document.getElementById('price').value);
+            const discount = parseFloat(document.getElementById('discount_price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            
+            if (price <= 0) {
+                alert('মূল্য ০ এর বেশি হতে হবে!');
+                e.preventDefault();
+                return;
+            }
+            
+            if (stock < 0) {
+                alert('স্টক নেগেটিভ হতে পারে না!');
+                e.preventDefault();
+                return;
+            }
+            
+            if (discount && discount >= price) {
+                alert('ডিসকাউন্ট মূল্য মূল্যের চেয়ে কম হতে হবে!');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

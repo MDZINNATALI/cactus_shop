@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার #{{ order.order_number }} - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .sidebar-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .store-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .store-logo {
+            width: 80px;
+            height: 80px;
+            background: #2c5f2d;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+        
+        .store-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #e8f5e9;
+            color: #2c5f2d;
+            border-left-color: #2c5f2d;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            color: #2c5f2d;
+        }
+        
+        .order-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+        
+        .order-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .order-title h1 {
+            font-size: 1.8rem;
+            color: #333;
+        }
+        
+        .order-status {
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #cce5ff; color: #004085; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #d4edda; color: #155724; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        
+        .order-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .meta-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .meta-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .order-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2c5f2d;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: #333;
+        }
+        
+        .items-table {
+            width: 100%;
+        }
+        
+        .item-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px 100px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .item-row:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .item-info h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .item-price {
+            color: #2c5f2d;
+            font-weight: 500;
+        }
+        
+        .item-quantity {
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .item-total {
+            text-align: right;
+            font-weight: bold;
+            color: #2c5f2d;
+        }
+        
+        .customer-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .info-group {
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+        
+        .payment-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .status-update {
+            margin-top: 25px;
+        }
+        
+        .status-update h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .status-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .status-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .status-btn.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-btn.confirmed {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-btn.processing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-btn.shipped {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-btn.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-btn.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .timeline {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .timeline h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .timeline-icon {
+            width: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-status {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .timeline-time {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .total-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        
+        .total-row.grand {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            border-top: 2px solid #2c5f2d;
+            margin-top: 10px;
+            padding-top: 15px;
+        }
+        
+        .notes-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .order-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .item-row {
+                grid-template-columns: 60px 1fr;
+                gap: 10px;
+            }
+            
+            .item-quantity, .item-total {
+                grid-column: span 2;
+                text-align: left;
+                padding-left: 70px;
+            }
+            
+            .status-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .customer-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- সাইডবার -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">🛒 Cactus Shop</a>
+            </div>
+            
+            <div class="store-info">
+                <div class="store-logo">
+                    {{ user.seller_profile.store_name|first|upper }}
+                </div>
+                <div class="store-name">{{ user.seller_profile.store_name }}</div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="{% url 'seller_dashboard' %}" class="nav-item">
+                    <i>📊</i> ড্যাশবোর্ড
+                </a>
+                <a href="{% url 'seller_products' %}" class="nav-item">
+                    <i>📦</i> আমার পণ্য
+                </a>
+                <a href="{% url 'add_product' %}" class="nav-item">
+                    <i>➕</i> নতুন পণ্য
+                </a>
+                <a href="{% url 'seller_orders' %}" class="nav-item active">
+                    <i>📋</i> অর্ডার
+                </a>
+                <a href="{% url 'seller_reviews' %}" class="nav-item">
+                    <i>⭐</i> রিভিউ
+                </a>
+                <a href="{% url 'seller_settings' %}" class="nav-item">
+                    <i>⚙️</i> সেটিংস
+                </a>
+                <a href="/" class="nav-item">
+                    <i>🏠</i> হোমপেজ
+                </a>
+                <a href="/accounts/logout/" class="nav-item">
+                    <i>🚪</i> লগআউট
+                </a>
+            </div>
+        </div>
+        
+        <!-- মূল কন্টেন্ট -->
+        <div class="main-content">
+            <a href="{% url 'seller_orders' %}" class="back-link">← অর্ডার লিস্টে ফিরে যান</a>
+            
+            <div class="order-header">
+                <div class="order-title">
+                    <h1>অর্ডার #{{ order.order_number }}</h1>
+                    <span class="order-status status-{{ order.status|lower }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="order-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">অর্ডারের তারিখ</span>
+                        <span class="meta-value">{{ order.created_at|date:"l, d F Y, h:i A" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">পেমেন্ট মেথড</span>
+                        <span class="meta-value">{{ order.get_payment_method_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">পেমেন্ট স্ট্যাটাস</span>
+                        <span class="meta-value">{{ order.get_payment_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-grid">
+                <!-- অর্ডার আইটেম -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>অর্ডার আইটেম</h2>
+                    </div>
+                    
+                    <div class="items-table">
+                        {% for item in items %}
+                        <div class="item-row">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="item-image">
+                            <div class="item-info">
+                                <h3>{{ item.product.name }}</h3>
+                                <span class="item-price">৳{{ item.product_price }}</span>
+                            </div>
+                            <div class="item-quantity">× {{ item.quantity }}</div>
+                            <div class="item-total">৳{{ item.total_price }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="total-section">
+                        <div class="total-row">
+                            <span>সাবটোটাল:</span>
+                            <span>৳{{ order.subtotal }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span>ডেলিভারি চার্জ:</span>
+                            <span>৳{{ order.shipping_cost }}</span>
+                        </div>
+                        {% if order.discount_amount %}
+                        <div class="total-row">
+                            <span>ডিসকাউন্ট:</span>
+                            <span>-৳{{ order.discount_amount }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="total-row grand">
+                            <span>মোট:</span>
+                            <span>৳{{ order.total_amount }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if order.customer_notes %}
+                    <div class="notes-section">
+                        <strong>ক্রেতার নোট:</strong>
+                        <p>{{ order.customer_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- ক্রেতার তথ্য ও স্ট্যাটাস আপডেট -->
+                <div>
+                    <div class="card" style="margin-bottom: 25px;">
+                        <div class="card-header">
+                            <h2>ক্রেতার তথ্য</h2>
+                        </div>
+                        
+                        <div class="customer-info-grid">
+                            <div class="info-group">
+                                <div class="info-label">নাম</div>
+                                <div class="info-value">{{ order.full_name }}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">ফোন</div>
+                                <div class="info-value">{{ order.phone }}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">ইমেইল</div>
+                                <div class="info-value">{{ order.email }}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">ঠিকানা</div>
+                                <div class="info-value">{{ order.address }}, {{ order.city }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>স্ট্যাটাস আপডেট</h2>
+                        </div>
+                        
+                        <div class="status-update">
+                            <h3>অর্ডার স্ট্যাটাস পরিবর্তন করুন</h3>
+                            <div class="status-buttons">
+                                <button class="status-btn pending" onclick="updateStatus('PENDING')" 
+                                        {% if order.status == 'PENDING' %}disabled{% endif %}>
+                                    📝 পেন্ডিং
+                                </button>
+                                <button class="status-btn confirmed" onclick="updateStatus('CONFIRMED')"
+                                        {% if order.status == 'CONFIRMED' %}disabled{% endif %}>
+                                    ✅ কনফার্মড
+                                </button>
+                                <button class="status-btn processing" onclick="updateStatus('PROCESSING')"
+                                        {% if order.status == 'PROCESSING' %}disabled{% endif %}>
+                                    ⚙️ প্রসেসিং
+                                </button>
+                                <button class="status-btn shipped" onclick="updateStatus('SHIPPED')"
+                                        {% if order.status == 'SHIPPED' %}disabled{% endif %}>
+                                    🚚 শিপড
+                                </button>
+                                <button class="status-btn delivered" onclick="updateStatus('DELIVERED')"
+                                        {% if order.status == 'DELIVERED' %}disabled{% endif %}>
+                                    📦 ডেলিভারড
+                                </button>
+                                <button class="status-btn cancelled" onclick="updateStatus('CANCELLED')"
+                                        {% if order.status == 'CANCELLED' %}disabled{% endif %}>
+                                    ❌ ক্যান্সেল
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline">
+                            <h3>স্ট্যাটাস টাইমলাইন</h3>
+                            {% for history in order.status_history.all|slice:":5" %}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    {% if history.status == 'PENDING' %}📝
+                                    {% elif history.status == 'CONFIRMED' %}✅
+                                    {% elif history.status == 'PROCESSING' %}⚙️
+                                    {% elif history.status == 'SHIPPED' %}🚚
+                                    {% elif history.status == 'DELIVERED' %}📦
+                                    {% elif history.status == 'CANCELLED' %}❌
+                                    {% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-status">{{ history.get_status_display }}</div>
+                                    <div class="timeline-time">{{ history.created_at|date:"d M Y, h:i A" }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateStatus(status) {
+            if (confirm(`অর্ডারের স্ট্যাটাস "${status}" এ পরিবর্তন করতে চান?`)) {
+                // TODO: AJAX কল করে স্ট্যাটাস আপডেট
+                alert('স্ট্যাটাস আপডেট ফাংশন শীঘ্রই আসছে...');
+            }
+        }
+        
+        // কনফার্মেশন ডায়ালগ
+        document.querySelectorAll('.status-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.disabled) return;
+                
+                const status = this.textContent.trim();
+                if (confirm(`অর্ডারের স্ট্যাটাস "${status}" এ পরিবর্তন করতে চান?`)) {
+                    // TODO: ইমপ্লিমেন্ট AJAX
+                }
+            });
+        });
+    </script>
+</body>
+</html>

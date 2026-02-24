@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার ক্যান্সেল - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .cancel-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .order-number {
+            color: #2c5f2d;
+            font-weight: bold;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .warning-box p {
+            color: #856404;
+            font-size: 0.95rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #2c5f2d;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #666;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            border-color: #333;
+            color: #333;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .summary-row.total {
+            font-weight: bold;
+            color: #333;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cancel-container">
+        <h1>❌ অর্ডার ক্যান্সেল</h1>
+        <div class="order-number">অর্ডার #{{ order.order_number }}</div>
+        
+        <div class="warning-box">
+            <h3>⚠️ সতর্কতা</h3>
+            <p>অর্ডার ক্যান্সেল করলে এটি আর ফেরত নেওয়া যাবে না। আপনি কি নিশ্চিত?</p>
+        </div>
+        
+        <div class="order-summary">
+            <div class="summary-row">
+                <span>অর্ডার তারিখ:</span>
+                <span>{{ order.created_at|date:"d M Y" }}</span>
+            </div>
+            <div class="summary-row">
+                <span>আইটেম সংখ্যা:</span>
+                <span>{{ order.items.count }}টি</span>
+            </div>
+            <div class="summary-row total">
+                <span>মোট মূল্য:</span>
+                <span>৳{{ order.total_amount }}</span>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="reason">ক্যান্সেলের কারণ *</label>
+                <select name="reason" id="reason" required>
+                    <option value="">কারণ নির্বাচন করুন</option>
+                    <option value="change_mind">আমি অর্ডারটি পরিবর্তন করতে চাই</option>
+                    <option value="found_cheaper">অন্য কোথাও সস্তা পেয়েছি</option>
+                    <option value="delivery_time">ডেলিভারি সময় বেশি</option>
+                    <option value="payment_issue">পেমেন্ট সমস্যা</option>
+                    <option value="other">অন্যান্য</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="details">বিস্তারিত (ঐচ্ছিক)</label>
+                <textarea name="details" id="details" placeholder="আপনার সমস্যার বিস্তারিত বলুন..."></textarea>
+            </div>
+            
+            <div class="btn-group">
+                <a href="{% url 'order_detail' order.order_number %}" class="btn btn-outline">না, ফিরে যান</a>
+                <button type="submit" class="btn btn-danger" onclick="return confirm('আপনি কি নিশ্চিত? এই অর্ডার ক্যান্সেল হবে।')">
+                    হ্যাঁ, ক্যান্সেল করুন
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

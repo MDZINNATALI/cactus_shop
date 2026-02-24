@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার অর্ডার - Cactus Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c5f2d;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        /* স্ট্যাটাস ট্যাব */
+        .status-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .status-tab {
+            padding: 10px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #666;
+            background: white;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+        
+        .status-tab:hover {
+            border-color: #2c5f2d;
+            color: #2c5f2d;
+        }
+        
+        .status-tab.active {
+            background: #2c5f2d;
+            color: white;
+            border-color: #2c5f2d;
+        }
+        
+        .status-tab .count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .status-tab.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* অর্ডার কার্ড */
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .order-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .order-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #cce5ff; color: #004085; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #d4edda; color: #155724; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        
+        .order-body {
+            padding: 20px;
+        }
+        
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .order-item-details {
+            flex: 1;
+        }
+        
+        .order-item-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .order-item-meta {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .order-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .order-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c5f2d;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e401f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #2c5f2d;
+            border: 2px solid #2c5f2d;
+        }
+        
+        .btn-outline:hover {
+            background: #2c5f2d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #cc0000;
+        }
+        
+        /* সার্চ বার */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-bar button {
+            padding: 12px 25px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        /* খালি স্টেট */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 25px;
+        }
+        
+        .empty-state a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #2c5f2d;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .order-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .order-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">🛒 Cactus Shop</a>
+        <div>
+            <a href="/cart/">কার্ট</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>আমার অর্ডার সমূহ</h1>
+        
+        <!-- সার্চ বার -->
+        <div class="search-bar">
+            <input type="text" placeholder="অর্ডার নম্বর দিয়ে খুঁজুন...">
+            <button>🔍 খুঁজুন</button>
+        </div>
+        
+        <!-- স্ট্যাটাস ট্যাব -->
+        <div class="status-tabs">
+            <a href="?status=all" class="status-tab {% if not request.GET.status or request.GET.status == 'all' %}active{% endif %}">
+                সব অর্ডার <span class="count">{{ orders.count }}</span>
+            </a>
+            <a href="?status=PENDING" class="status-tab {% if request.GET.status == 'PENDING' %}active{% endif %}">
+                📝 পেন্ডিং <span class="count">{{ pending_count }}</span>
+            </a>
+            <a href="?status=DELIVERED" class="status-tab {% if request.GET.status == 'DELIVERED' %}active{% endif %}">
+                📦 ডেলিভারড <span class="count">{{ delivered_count }}</span>
+            </a>
+            <a href="?status=CANCELLED" class="status-tab {% if request.GET.status == 'CANCELLED' %}active{% endif %}">
+                ❌ ক্যান্সেলড <span class="count">{{ cancelled_count }}</span>
+            </a>
+        </div>
+        
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <span class="order-number">অর্ডার #{{ order.order_number }}</span>
+                        <span style="margin-left: 15px; color: #666;">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                    <span class="order-status status-{{ order.status|lower }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="order-body">
+                    <div class="order-items">
+                        {% for item in order.items.all|slice:":3" %}
+                        <div class="order-item">
+                            <img src="{{ item.product_image }}" alt="{{ item.product_name }}">
+                            <div class="order-item-details">
+                                <div class="order-item-name">{{ item.product_name }}</div>
+                                <div class="order-item-meta">
+                                    ৳{{ item.product_price }} × {{ item.quantity }} = ৳{{ item.total_price }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% if order.items.count > 3 %}
+                        <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+                            এবং আরও {{ order.items.count|add:"-3" }}টি আইটেম...
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="order-footer">
+                    <div class="order-total">
+                        মোট: ৳{{ order.total_amount }}
+                        <span style="font-size: 0.9rem; font-weight: normal; color: #666; margin-left: 10px;">
+                            ({{ order.items.count }}টি আইটেম)
+                        </span>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <a href="{% url 'order_detail' order.order_number %}" class="btn btn-primary">
+                            🔍 বিস্তারিত
+                        </a>
+                        <a href="{% url 'track_order' order.order_number %}" class="btn btn-outline">
+                            🚚 ট্র্যাক
+                        </a>
+                        {% if order.can_cancel %}
+                        <a href="{% url 'cancel_order' order.order_number %}" class="btn btn-danger">
+                            ❌ ক্যান্সেল
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <h2>কোনো অর্ডার নেই</h2>
+                <p>আপনি এখনও কোনো অর্ডার করেননি। আমাদের পণ্য দেখুন এবং অর্ডার করুন।</p>
+                <a href="/">শপিং শুরু করুন →</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
