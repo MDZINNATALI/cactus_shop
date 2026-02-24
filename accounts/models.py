@@ -35,6 +35,14 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def save(self, *args, **kwargs):
+        # ✅ এই অংশটা যোগ করো: superuser হলে automatically ADMIN হবে
+        if self.is_superuser:
+            self.user_type = 'ADMIN'
+            self.is_approved = True
+            self.is_staff = True
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return f"{self.username} - {self.get_user_type_display()}"
 
