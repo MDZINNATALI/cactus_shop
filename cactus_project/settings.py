@@ -16,9 +16,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)m&7i#r(zd7w(@=#u!!*5po(kian^q0fk4pqva67_h&cw*0$cb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cactusonlineshop.pythonanywhere.com']
 
 
 # Application definition
