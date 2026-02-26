@@ -18,11 +18,15 @@ SECRET_KEY = 'django-insecure-)m&7i#r(zd7w(@=#u!!*5po(kian^q0fk4pqva67_h&cw*0$cb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    'cactusonlineshop.pythonanywhere.com',
+    '127.0.0.1',
+    'localhost'
+]
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
+    "https://cactusonlineshop.pythonanywhere.com",
 ]
-
 
 # Application definition
 
