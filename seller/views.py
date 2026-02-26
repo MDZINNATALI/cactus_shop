@@ -5,48 +5,34 @@ from django.db.models import Sum, Count, Q
 from django.utils import timezone
 from products.models import Product, Category, ProductReview
 from orders.models import OrderItem, Order
-
 @login_required
 def dashboard(request):
-    """সেলার ড্যাশবোর্ড"""
+  
     if request.user.user_type != 'SELLER':
         messages.error(request, 'আপনার এই পৃষ্ঠা দেখার অনুমতি নেই!')
         return redirect('home')
-
     if not request.user.is_approved:
         messages.warning(request, 'আপনার অ্যাকাউন্ট অ্যাপ্রুভাল পেন্ডিং। অ্যাডমিন অ্যাপ্রুভ করলে আপনি ড্যাশবোর্ড ব্যবহার করতে পারবেন।')
         return redirect('home')
-
-    # SellerProfile চেক করো
     if not hasattr(request.user, 'seller_profile'):
         messages.error(request, 'Seller profile পাওয়া যায়নি!')
         return redirect('home')
 
-    # পরিসংখ্যান
     total_products = Product.objects.filter(seller=request.user).count()
     active_products = Product.objects.filter(seller=request.user, available=True).count()
     pending_products = Product.objects.filter(seller=request.user, is_approved=False).count()
-
-    # অর্ডার পরিসংখ্যান
     order_items = OrderItem.objects.filter(seller=request.user)
     total_orders = order_items.values('order').distinct().count()
     pending_orders = order_items.filter(order__status='PENDING').count()
     delivered_orders = order_items.filter(order__status='DELIVERED').count()
-
-    # ✅ বিক্রয় পরিসংখ্যান (total_price এর পরিবর্তে product_price ব্যবহার করো)
     total_sales = order_items.aggregate(
         total=Sum('product_price')
     )['total'] or 0
-    
     this_month_sales = order_items.filter(
         order__created_at__month=timezone.now().month,
         order__created_at__year=timezone.now().year
     ).aggregate(total=Sum('product_price'))['total'] or 0
-
-    # সাম্প্রতিক অর্ডার
     recent_orders = order_items.select_related('order', 'product').order_by('-order__created_at')[:5]
-
-    # রিভিউ (try-except এ রাখো)
     try:
         reviews = ProductReview.objects.filter(product__seller=request.user).order_by('-created_at')[:5]
         avg_rating = reviews.aggregate(avg=Sum('rating')/Count('id'))['avg'] or 0
@@ -54,7 +40,7 @@ def dashboard(request):
         reviews = []
         avg_rating = 0
 
-    context = {
+        context = {
         'total_products': total_products,
         'active_products': active_products,
         'pending_products': pending_products,
@@ -68,16 +54,12 @@ def dashboard(request):
         'avg_rating': avg_rating,
     }
     return render(request, 'seller/dashboard.html', context)
-
 @login_required
 def products(request):
-    """সেলারের সব পণ্য"""
+
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
-    
     product_list = Product.objects.filter(seller=request.user).order_by('-created_at')
-    
-    # ফিল্টার
     status = request.GET.get('status')
     if status == 'approved':
         product_list = product_list.filter(is_approved=True)
@@ -85,7 +67,6 @@ def products(request):
         product_list = product_list.filter(is_approved=False)
     elif status == 'out_of_stock':
         product_list = product_list.filter(stock=0)
-    
     context = {
         'products': product_list,
     }
@@ -93,23 +74,17 @@ def products(request):
 
 @login_required
 def add_product(request):
-    """নতুন পণ্য যোগ করা"""
+  
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
-    
     categories = Category.objects.all()
-    
     if request.method == 'POST':
-        # ডাটা ভ্যালিডেশন
         name = request.POST.get('name')
         price = request.POST.get('price')
         stock = request.POST.get('stock')
-        
         if not name or not price or not stock:
             messages.error(request, 'সব প্রয়োজনীয় তথ্য দিন!')
             return redirect('add_product')
-        
-        # স্লাগ তৈরি
         from django.utils.text import slugify
         base_slug = slugify(name)
         slug = base_slug
@@ -117,8 +92,6 @@ def add_product(request):
         while Product.objects.filter(slug=slug).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
-        
-        # পণ্য তৈরি
         product = Product.objects.create(
             seller=request.user,
             category_id=request.POST.get('category'),
@@ -128,10 +101,10 @@ def add_product(request):
             price=price,
             discount_price=request.POST.get('discount_price') or None,
             stock=stock,
-            is_approved=False,  # অ্যাডমিন অ্যাপ্রুভ করবে
+            is_approved=False, 
         )
         
-        # ছবি আপলোড
+    
         if 'image' in request.FILES:
             product.image = request.FILES['image']
         if 'image2' in request.FILES:
@@ -151,7 +124,7 @@ def add_product(request):
 
 @login_required
 def edit_product(request, product_id):
-    """পণ্য এডিট করা"""
+ 
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
@@ -166,7 +139,7 @@ def edit_product(request, product_id):
         product.discount_price = request.POST.get('discount_price') or None
         product.stock = request.POST.get('stock')
         
-        # নতুন ছবি আপলোড
+       
         if 'image' in request.FILES:
             product.image = request.FILES['image']
         if 'image2' in request.FILES:
@@ -186,7 +159,7 @@ def edit_product(request, product_id):
 
 @login_required
 def delete_product(request, product_id):
-    """পণ্য ডিলিট করা"""
+
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
@@ -201,7 +174,7 @@ def delete_product(request, product_id):
 
 @login_required
 def orders(request):
-    """সেলারের অর্ডার"""
+
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
@@ -209,12 +182,12 @@ def orders(request):
         seller=request.user
     ).select_related('order', 'product').order_by('-order__created_at')
     
-    # ফিল্টার
+
     status = request.GET.get('status')
     if status:
         order_items = order_items.filter(order__status=status)
     
-    # অর্ডার গ্রুপিং
+
     orders_dict = {}
     for item in order_items:
         if item.order not in orders_dict:
@@ -228,7 +201,7 @@ def orders(request):
 
 @login_required
 def order_detail(request, order_id):
-    """অর্ডার ডিটেইল"""
+
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
@@ -247,7 +220,7 @@ def order_detail(request, order_id):
 
 @login_required
 def update_order_status(request, order_id, item_id):
-    """অর্ডার আইটেমের স্ট্যাটাস আপডেট"""
+
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
@@ -255,14 +228,13 @@ def update_order_status(request, order_id, item_id):
     
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        # TODO: ইমপ্লিমেন্ট স্ট্যাটাস আপডেট লজিক
         messages.success(request, 'অর্ডার স্ট্যাটাস আপডেট হয়েছে!')
     
     return redirect('seller_order_detail', order_id=order_id)
 
 @login_required
 def reviews(request):
-    """পণ্যের রিভিউ"""
+  
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
@@ -277,14 +249,14 @@ def reviews(request):
 
 @login_required
 def settings(request):
-    """সেলার সেটিংস"""
+    
     if request.user.user_type != 'SELLER' or not request.user.is_approved:
         return redirect('home')
     
     seller_profile = request.user.seller_profile
     
     if request.method == 'POST':
-        # প্রোফাইল আপডেট
+        
         seller_profile.store_name = request.POST.get('store_name')
         seller_profile.store_description = request.POST.get('store_description')
         seller_profile.business_address = request.POST.get('business_address')
