@@ -74,9 +74,9 @@ def register_seller(request):
             username=username,
             email=email,
             password=password,
-            phone=phone,
+            phone=request.POST.get('phone'),
             user_type='SELLER',
-            is_approved=False
+            is_approved=True
         )
         
         # সেলার প্রোফাইল তৈরি
@@ -86,8 +86,8 @@ def register_seller(request):
             store_description=request.POST['store_description'],
             business_address=request.POST['business_address'],
             nid_number=request.POST['nid_number'],
-            payment_method=request.POST['payment_method'],
-            payment_number=request.POST['payment_number']
+            payment_method=request.POST.get('payment_method', ''),
+            payment_number=request.POST.get('payment_number', '')
         )
         
         messages.success(request, 'আপনার রেজিস্ট্রেশন সফল হয়েছে! অ্যাডমিন অ্যাপ্রুভ করার পর আপনি লগইন করতে পারবেন।')

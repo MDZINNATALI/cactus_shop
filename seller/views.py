@@ -12,35 +12,48 @@ def dashboard(request):
     if request.user.user_type != 'SELLER':
         messages.error(request, 'আপনার এই পৃষ্ঠা দেখার অনুমতি নেই!')
         return redirect('home')
-    
+
     if not request.user.is_approved:
         messages.warning(request, 'আপনার অ্যাকাউন্ট অ্যাপ্রুভাল পেন্ডিং। অ্যাডমিন অ্যাপ্রুভ করলে আপনি ড্যাশবোর্ড ব্যবহার করতে পারবেন।')
         return redirect('home')
-    
+
+    # SellerProfile চেক করো
+    if not hasattr(request.user, 'seller_profile'):
+        messages.error(request, 'Seller profile পাওয়া যায়নি!')
+        return redirect('home')
+
     # পরিসংখ্যান
     total_products = Product.objects.filter(seller=request.user).count()
     active_products = Product.objects.filter(seller=request.user, available=True).count()
     pending_products = Product.objects.filter(seller=request.user, is_approved=False).count()
-    
+
     # অর্ডার পরিসংখ্যান
     order_items = OrderItem.objects.filter(seller=request.user)
     total_orders = order_items.values('order').distinct().count()
     pending_orders = order_items.filter(order__status='PENDING').count()
     delivered_orders = order_items.filter(order__status='DELIVERED').count()
+
+    # ✅ বিক্রয় পরিসংখ্যান (total_price এর পরিবর্তে product_price ব্যবহার করো)
+    total_sales = order_items.aggregate(
+        total=Sum('product_price')
+    )['total'] or 0
     
-    # বিক্রয় পরিসংখ্যান
-    total_sales = order_items.aggregate(total=Sum('total_price'))['total'] or 0
     this_month_sales = order_items.filter(
-        order__created_at__month=timezone.now().month
-    ).aggregate(total=Sum('total_price'))['total'] or 0
-    
+        order__created_at__month=timezone.now().month,
+        order__created_at__year=timezone.now().year
+    ).aggregate(total=Sum('product_price'))['total'] or 0
+
     # সাম্প্রতিক অর্ডার
     recent_orders = order_items.select_related('order', 'product').order_by('-order__created_at')[:5]
-    
-    # রিভিউ
-    reviews = ProductReview.objects.filter(product__seller=request.user).order_by('-created_at')[:5]
-    avg_rating = reviews.aggregate(avg=Sum('rating')/Count('id'))['avg'] or 0
-    
+
+    # রিভিউ (try-except এ রাখো)
+    try:
+        reviews = ProductReview.objects.filter(product__seller=request.user).order_by('-created_at')[:5]
+        avg_rating = reviews.aggregate(avg=Sum('rating')/Count('id'))['avg'] or 0
+    except:
+        reviews = []
+        avg_rating = 0
+
     context = {
         'total_products': total_products,
         'active_products': active_products,

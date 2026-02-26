@@ -316,17 +316,26 @@
                 <a href="/" class="logo">🛒 Cactus Shop</a>
             </div>
             
-            <div class="store-info">
-                <div class="store-logo">
-                    {% if user.seller_profile.store_logo %}
-                        <img src="{{ user.seller_profile.store_logo.url }}" alt="Store Logo">
-                    {% else %}
-                        {{ user.seller_profile.store_name|first|upper }}
-                    {% endif %}
-                </div>
-                <div class="store-name">{{ user.seller_profile.store_name }}</div>
-                <div class="store-rating">⭐ {{ avg_rating|floatformat:1 }} ({{ recent_reviews|length }})</div>
-            </div>
+           <div class="store-info">
+    <div class="store-logo">
+        {% if user.seller_profile and user.seller_profile.store_logo %}
+            <img src="{{ user.seller_profile.store_logo.url }}" alt="Store Logo">
+        {% elif user.seller_profile and user.seller_profile.store_name %}
+            {{ user.seller_profile.store_name|first|upper }}
+        {% else %}
+            S
+        {% endif %}
+    </div>
+
+    <div class="store-name">
+        {{ user.seller_profile.store_name|default:"Store" }}
+    </div>
+
+    <div class="store-rating">
+        ⭐ {{ avg_rating|default:0|floatformat:1 }} 
+        ({{ recent_reviews|default:0|length }})
+    </div>
+</div>
             
             <div class="nav-menu">
                 <a href="{% url 'seller_dashboard' %}" class="nav-item active">
